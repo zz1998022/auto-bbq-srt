@@ -1,24 +1,19 @@
 # auto-bbq-srt
 
-`auto-bbq-srt` 是一个基于 Node.js + TypeScript 的自动字幕翻译 CLI 工具，也就是“自动烤肉机”。
+一个用 Node.js + TypeScript 写的字幕翻译 CLI。名字里的 bbq 是“烤肉”，目标是把 `.srt` 字幕丢进去，翻译后再导出一份时间轴不乱的新字幕。
 
-项目目标是读取 `.srt` 等字幕文件，通过可插拔 LLM Provider 翻译字幕文本，校验翻译结果，并在保留原始时间轴和字幕结构的前提下导出新字幕。
+这个仓库现在还在打地基：CLI 入口、目录结构、测试、构建和提交检查已经准备好，真正的 SRT 解析和翻译流水线会按阶段继续补。
 
-## 当前状态
+## 现在有什么
 
-项目处于阶段 0：工程初始化。
+- ESM + TypeScript 项目骨架
+- `auto-bbq` CLI 入口
+- `config / translate / resume / inspect / cache` 命令骨架
+- 编号式配置菜单原型
+- Vitest、tsup、ESLint、Prettier、Husky
+- 一份最小的 `sample.srt` fixture
 
-当前已建立：
-
-- TypeScript + ESM 项目骨架
-- CLI 入口和命令注册结构
-- Vitest 测试配置
-- tsup 构建配置
-- CLI-first 配置命令骨架和测试字幕 fixture
-
-后续阶段会逐步实现 SRT parser、exporter、chunker、Mock LLM Provider、翻译流水线、缓存和 Job Store。
-
-## 本地开发
+## 开发
 
 ```bash
 pnpm install
@@ -29,22 +24,17 @@ pnpm test
 pnpm build
 ```
 
-项目使用 Husky 在提交前执行 lint、格式检查、类型检查和单元测试。提交信息需要使用中文，并说明清楚本次改动的内容和目的。
+提交前 Husky 会跑 lint、格式检查、类型检查和单元测试。提交信息需要写中文，并说明这次改了什么、为什么改。
 
-## CLI 目标
+## 配置方式
 
-用户配置 Provider 和高级默认项时优先使用 CLI，不要求手写配置文件：
+普通用户不需要手写配置文件。默认入口是：
 
 ```bash
 auto-bbq config
-auto-bbq config set --setting llm.provider=openai --setting llm.apiKey=sk-... --setting llm.model=gpt-4.1-mini
-auto-bbq config set --setting llm.provider=openai-compatible --setting llm.apiKey=sk-... --setting llm.model=deepseek-chat --setting llm.baseUrl=https://api.example.com/v1
-auto-bbq config set --setting translation.targetLanguage=zh-CN
-auto-bbq config set --setting chunk.maxLines=30 --setting cache.enabled=true --setting output.mode=replace --setting logging.level=info
-auto-bbq config show
 ```
 
-`auto-bbq config` 默认打开编号式交互菜单：
+它会打开类似这样的菜单：
 
 ```text
 Auto BBQ Options
@@ -60,27 +50,36 @@ Auto BBQ Options
 Press a key [1...6 / 0]:
 ```
 
-官方 OpenAI / Anthropic 如果没有配置 `llm.baseUrl`，CLI 后续实现时必须写入官方默认端点；第三方兼容服务必须显式配置 `llm.baseUrl`。API Key 由用户通过 CLI 配置，不能要求用户手写配置文件或 `.env`。
+脚本或高级用法可以直接设置 key：
 
-`translate` 命令只保留高频入口参数。translation、chunk、cache、output、logging 这些默认行为通过 `config set --setting` 管理，以 CLI 中保存的设置为准。
+```bash
+auto-bbq config set --setting llm.provider=openai --setting llm.apiKey=sk-... --setting llm.model=gpt-4.1-mini
+auto-bbq config set --setting llm.provider=openai-compatible --setting llm.apiKey=sk-... --setting llm.model=deepseek-chat --setting llm.baseUrl=https://api.example.com/v1
+auto-bbq config set --setting translation.targetLanguage=zh-CN
+auto-bbq config show
+```
 
-第一版可运行目标：
+官方 OpenAI / Anthropic 没配置 `llm.baseUrl` 时，后续实现会使用官方默认端点。第三方兼容接口必须显式配置 `llm.baseUrl`。
+
+## 目标命令
+
+第一版先跑通 mock provider：
 
 ```bash
 auto-bbq translate tests/fixtures/sample.srt -o output.zh.srt --provider mock
 ```
 
-最终常用命令：
+最终常用形态：
 
 ```bash
 auto-bbq translate input.srt -o output.zh.srt --target zh-CN
 ```
 
-## 安全
+`translate` 会尽量保持清爽，只放输入、输出、目标语言、provider 覆盖和 dry-run 这类高频参数。翻译风格、chunk、缓存、输出模式、日志等级这些默认项走 `auto-bbq config`。
 
-不要提交：
+## 不提交这些东西
 
 - API Key
-- 真实用户字幕原文
-- 真实用户字幕缓存
-- 真实任务输出
+- 真实用户字幕
+- 本地缓存
+- 任务输出
