@@ -1,0 +1,1 @@
+pnpm verify:commit-msg "$1"

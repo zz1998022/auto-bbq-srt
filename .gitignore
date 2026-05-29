@@ -1,0 +1,17 @@
+AGENTS.md
+GOAL.md
+docs/agent/
+
+.env
+.auto-bbq/
+*.local.yaml
+*.secret.yaml
+
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+*.log
+_tmp_*
+
+output*.srt

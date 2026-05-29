@@ -1,0 +1,48 @@
+{
+  "name": "auto-bbq-srt",
+  "version": "0.1.0",
+  "description": "A production-minded subtitle translation CLI.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "auto-bbq": "./dist/bin/auto-bbq.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run tests/integration",
+    "typecheck": "tsc --noEmit",
+    "auto-bbq": "tsx bin/auto-bbq.ts",
+    "verify:commit-msg": "tsx scripts/verify-commit-message.ts",
+    "prepare": "husky"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "commander": "^14.0.2",
+    "dotenv": "^17.2.3",
+    "p-limit": "^7.2.0",
+    "p-retry": "^7.1.0",
+    "pino": "^10.1.0",
+    "yaml": "^2.8.1",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.7.4",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript-eslint": "^8.50.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.14"
+  }
+}
