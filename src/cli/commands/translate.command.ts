@@ -2,7 +2,9 @@ import type { Command } from 'commander';
 import { readFile } from 'node:fs/promises';
 
 import { TranslateSubtitleUseCase } from '../../app/TranslateSubtitleUseCase.js';
+import { FileTranslationCache } from '../../infrastructure/cache/FileTranslationCache.js';
 import { NodeFileSystem } from '../../infrastructure/fs/NodeFileSystem.js';
+import { FileJobStore } from '../../infrastructure/job-store/FileJobStore.js';
 import { MockLlmProvider } from '../../providers/mock/MockLlmProvider.js';
 import { DefaultSubtitleChunker } from '../../subtitle/chunkers/DefaultSubtitleChunker.js';
 import { SrtExporter } from '../../subtitle/exporters/SrtExporter.js';
@@ -38,7 +40,9 @@ export function registerTranslateCommand(program: Command): void {
         exporter: new SrtExporter(),
         chunker: new DefaultSubtitleChunker(),
         provider: new MockLlmProvider(),
-        promptTemplate
+        promptTemplate,
+        cache: new FileTranslationCache('.auto-bbq/cache'),
+        jobStore: new FileJobStore('.auto-bbq/jobs')
       });
 
       const result = await useCase.execute({
@@ -47,6 +51,7 @@ export function registerTranslateCommand(program: Command): void {
         targetLanguage: options.target ?? 'zh-CN'
       });
 
+      console.log(`Job: ${result.jobId}`);
       console.log(`Translated ${result.lineCount} subtitle lines in ${result.chunkCount} chunk(s).`);
       console.log(`Output: ${result.outputFile}`);
     });
