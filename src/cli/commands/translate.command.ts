@@ -30,7 +30,9 @@ export function registerTranslateCommand(program: Command): void {
       const providerName = options.provider ?? 'mock';
 
       if (providerName !== 'mock') {
-        throw new Error('阶段 2 只支持 mock provider。');
+        throw new Error(
+          '当前 MVP 的 CLI 翻译入口只接入 mock provider；真实 Provider 适配器已完成，后续会接入 CLI 配置。'
+        );
       }
 
       const promptTemplate = await readFile(new URL('../../prompts/subtitle-translate.md', import.meta.url), 'utf8');

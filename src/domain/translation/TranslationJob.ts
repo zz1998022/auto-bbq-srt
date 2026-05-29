@@ -2,6 +2,11 @@ export interface TranslationJob {
   jobId: string;
   inputFile: string;
   outputFile: string;
+  targetLanguage?: string;
+  sourceLanguage?: string;
+  style?: string;
+  model?: string;
+  provider?: string;
   status: JobStatus;
   chunks: TranslationChunkTask[];
   createdAt: string;

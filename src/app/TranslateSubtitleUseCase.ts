@@ -77,7 +77,7 @@ export class TranslateSubtitleUseCase {
     const document = this.dependencies.parser.parse(content, { sourceFile: request.inputFile });
     const chunks = this.dependencies.chunker.chunk(document);
     const options = buildTranslationOptions(request);
-    let job = createJob(request, chunks);
+    let job = createJob(request, chunks, this.dependencies.provider.name);
 
     await this.dependencies.jobStore?.create(job);
 
@@ -172,13 +172,18 @@ export class TranslateSubtitleUseCase {
   }
 }
 
-function createJob(request: TranslateSubtitleRequest, chunks: SubtitleChunk[]): TranslationJob {
+function createJob(request: TranslateSubtitleRequest, chunks: SubtitleChunk[], provider: string): TranslationJob {
   const now = new Date().toISOString();
 
   return {
     jobId: request.jobId ?? randomUUID(),
     inputFile: request.inputFile,
     outputFile: request.outputFile,
+    targetLanguage: request.targetLanguage,
+    sourceLanguage: request.sourceLanguage ?? 'auto',
+    style: request.style ?? 'natural-subtitle',
+    model: request.model ?? 'mock-translate',
+    provider,
     status: 'RUNNING',
     chunks: chunks.map((chunk) => ({
       chunkId: chunk.chunkId,

@@ -18,3 +18,10 @@ export class LlmProviderError extends Error {
     this.name = 'LlmProviderError';
   }
 }
+
+export class ConfigError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ConfigError';
+  }
+}

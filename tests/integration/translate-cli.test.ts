@@ -23,6 +23,13 @@ describe('translate CLI', () => {
       ]);
       const output = await readFile(outputFile, 'utf8');
       const jobIds = await readdir('.auto-bbq/jobs');
+      const jobId = jobIds[0];
+
+      if (!jobId) {
+        throw new Error('缺少 CLI 生成的任务 ID。');
+      }
+
+      await runCli(['node', 'auto-bbq', 'resume', jobId]);
 
       expect(output).toContain('00:00:01,000 --> 00:00:03,000');
       expect(output).toContain('[mock:mock-translate] Hello, welcome to the show.');
