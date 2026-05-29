@@ -3,4 +3,5 @@ export interface TranslationOptions {
   targetLanguage: string;
   style: string;
   model: string;
+  maxRetries: number;
 }

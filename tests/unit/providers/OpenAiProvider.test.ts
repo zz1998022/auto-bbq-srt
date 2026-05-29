@@ -29,7 +29,25 @@ describe('OpenAiProvider', () => {
       model: 'gpt-test',
       temperature: 0.2,
       max_tokens: 128,
-      response_format: { type: 'json_object' }
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'subtitle_translation_response',
+          strict: true
+        }
+      }
+    });
+    expect(fake.calls[0]?.body.response_format).toMatchObject({
+      json_schema: {
+        schema: {
+          required: ['items'],
+          properties: {
+            items: {
+              type: 'array'
+            }
+          }
+        }
+      }
     });
     expect(fake.calls[0]?.body.messages).toEqual([
       { role: 'system', content: '只输出 JSON' },

@@ -28,7 +28,12 @@ interface PromptItem {
 }
 
 function extractPromptItems(prompt: string): PromptItem[] {
-  const marker = 'Current items:';
+  const marker = findPromptMarker(prompt, ['当前需要翻译的字幕项：', 'Current items:']);
+
+  if (!marker) {
+    return [];
+  }
+
   const start = prompt.indexOf(marker);
 
   if (start < 0) {
@@ -36,7 +41,7 @@ function extractPromptItems(prompt: string): PromptItem[] {
   }
 
   const afterMarker = prompt.slice(start + marker.length);
-  const nextMarker = afterMarker.indexOf('\n\nNext context:');
+  const nextMarker = findNextMarkerIndex(afterMarker, ['\n\n下文参考：', '\n\nNext context:']);
   const jsonText = (nextMarker >= 0 ? afterMarker.slice(0, nextMarker) : afterMarker).trim();
 
   try {
@@ -50,6 +55,15 @@ function extractPromptItems(prompt: string): PromptItem[] {
   } catch {
     return [];
   }
+}
+
+function findPromptMarker(prompt: string, markers: string[]): string | undefined {
+  return markers.find((marker) => prompt.includes(marker));
+}
+
+function findNextMarkerIndex(prompt: string, markers: string[]): number {
+  const indexes = markers.map((marker) => prompt.indexOf(marker)).filter((index) => index >= 0);
+  return indexes.length > 0 ? Math.min(...indexes) : -1;
 }
 
 function isPromptItem(value: unknown): value is PromptItem {

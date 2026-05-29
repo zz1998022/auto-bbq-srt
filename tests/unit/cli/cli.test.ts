@@ -43,14 +43,10 @@ describe('createCli', () => {
   });
 
   it('defines an interactive numbered settings menu', () => {
-    expect(CONFIG_MENU_ITEMS.map((item) => item.label)).toEqual([
-      'LLM Provider',
-      'Translation',
-      'Chunk',
-      'Cache',
-      'Output',
-      'Logging'
-    ]);
-    expect(renderConfigMenu()).toContain('Press a key [1...6 / 0]:');
+    expect(CONFIG_MENU_ITEMS.map((item) => item.label)).toEqual(['LLM Provider']);
+    expect(renderConfigMenu()).toContain('Press a key [1...1 / 0]:');
+    expect(renderConfigMenu()).not.toContain('Translation');
+    expect(renderConfigMenu()).not.toContain('Chunk');
+    expect(renderConfigMenu()).not.toContain('Output');
   });
 });

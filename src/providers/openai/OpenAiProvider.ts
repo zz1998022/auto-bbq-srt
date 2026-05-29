@@ -58,8 +58,33 @@ function buildOpenAiRequestBody(request: LlmChatRequest, fallbackModel: string):
   }
 
   if (request.responseFormat === 'json') {
-    // OpenAI 官方 Chat Completions 支持 JSON object 响应格式，兼容阶段内的字幕 JSON 输出契约。
-    body.response_format = { type: 'json_object' };
+    // OpenAI 官方 Provider 使用 JSON Schema 结构化输出，尽量在模型侧约束字幕翻译响应形状。
+    body.response_format = {
+      type: 'json_schema',
+      json_schema: {
+        name: 'subtitle_translation_response',
+        strict: true,
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['items'],
+          properties: {
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['id', 'translation'],
+                properties: {
+                  id: { type: 'string' },
+                  translation: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
   }
 
   return body;
